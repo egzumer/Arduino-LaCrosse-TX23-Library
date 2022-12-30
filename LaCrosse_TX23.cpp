@@ -24,10 +24,11 @@
 
 #include <LaCrosse_TX23.h>
 
-LaCrosse_TX23::LaCrosse_TX23(int pin)
+LaCrosse_TX23::LaCrosse_TX23(int pin, DelayFunc delayFunc) : 
+	_pin(pin),
+	_delay(delayFunc)
 {
-pinMode(pin, INPUT);
-_pin = pin;
+	pinMode(pin, INPUT);
 }
 
 void LaCrosse_TX23::pullBits(void *dst, bool *src, int count)
@@ -39,18 +40,18 @@ void LaCrosse_TX23::pullBits(void *dst, bool *src, int count)
 	}	
 }
 
-bool LaCrosse_TX23::read(float &speed, int &direction)
+bool LaCrosse_TX23::readRaw(uint16_t &speed, uint8_t &direction)
 {
 	speed = 0;
 	direction = 0;
 
 	digitalWrite(_pin,LOW);
 	pinMode(_pin,OUTPUT);
-	delay(500);
+	_delay(500);
 	pinMode(_pin,INPUT);
 	pulseIn(_pin,LOW);
 
-	unsigned bitLen = 1200;
+	const unsigned bitLen = 1200;
 
 	bool data[50];
 	bool lastState = 1;
@@ -86,8 +87,33 @@ bool LaCrosse_TX23::read(float &speed, int &direction)
 	if(csum!=sum) return false;
 	if(spd!=nspd || dir!=ndir) return false;
 
-	speed = spd/10.0;
+	speed = spd;
 	direction = dir;
 
 	return true;
 }
+
+bool LaCrosse_TX23::read(float &speed, uint16_t &direction)
+{
+	uint16_t s;
+	uint8_t d;
+	bool ok = readRaw(s,d);
+	speed = s*0.1;
+	direction = d * 22.5;
+	return ok;
+}
+
+LaCrosse_TX23::RawData LaCrosse_TX23::readRaw()
+{
+	LaCrosse_TX23::RawData data;
+	data.valid = readRaw(data.speed, data.direction);
+	return data;
+}
+
+LaCrosse_TX23::Data LaCrosse_TX23::read()
+{
+	LaCrosse_TX23::Data data;
+	data.valid = read(data.speed, data.direction);
+	return data;
+}
+

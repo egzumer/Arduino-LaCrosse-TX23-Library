@@ -30,12 +30,45 @@
 class LaCrosse_TX23
 {
 	public:
+    typedef void(*DelayFunc)(uint32_t ms);
+
 		//init pin number with DATA wire connected
-		LaCrosse_TX23(int pin);
-		//reads sensor data, returns true if success
-		bool read(float &speed, int &direction);
+		LaCrosse_TX23(int pin, DelayFunc delayFunc = delay);
+
+		// reads sensor data, returns true if successfull
+    // wind speed in m/s
+    // wind direction in degrees 0-359
+    bool read(float &speed, uint16_t &direction);
+    
+    // reads raw sensor data, returns true if successfull
+    // wind speed in 0.1 m/s
+    // wind direction 0-15
+		bool readRaw(uint16_t &speed, uint8_t &direction);
+
+    struct Data {
+      bool valid; // true if read successful
+      float speed; // wind speed in m/s
+      uint16_t direction; // wind direction in degrees 0-359
+    };
+
+    Data read();
+
+    struct RawData {
+      bool valid; // true if read successful
+      uint16_t speed; // wind speed in 0.1 m/s
+      uint8_t direction; // wind direction 0-15
+    };
+
+    RawData readRaw();
+    
+    // sets delay function that takes ms
+    // conversion trigger signal length is 300ms, by default standard Arduino delay is used,
+    // this can be changed to e.g. deep sleep to aptimise battery consumption
+    void setDelayFunc(DelayFunc func) { _delay = func;};
+    
 	private:
 		int _pin;
+    DelayFunc _delay;
 		static void pullBits(void *dst, bool *src, int count);
 
 };
