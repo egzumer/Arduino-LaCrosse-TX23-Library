@@ -30,7 +30,7 @@
 class LaCrosse_TX23
 {
 	public:
-    typedef void(*DelayFunc)(uint32_t ms);
+    typedef decltype(delay) *DelayFunc;
 
 		//init pin number with DATA wire connected
 		LaCrosse_TX23(int pin, DelayFunc delayFunc = delay);
