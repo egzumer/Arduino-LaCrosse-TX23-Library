@@ -30,10 +30,10 @@
 class LaCrosse_TX23
 {
 	public:
-    typedef decltype(delay) *DelayFunc;
+    typedef void(*DelayFunc)(uint32_t ms);
 
 		//init pin number with DATA wire connected
-		LaCrosse_TX23(int pin, DelayFunc delayFunc = delay);
+		LaCrosse_TX23(int pin, DelayFunc delayFunc = [](uint32_t ms){delay(ms);} );
 
 		// reads sensor data, returns true if successfull
     // wind speed in m/s
