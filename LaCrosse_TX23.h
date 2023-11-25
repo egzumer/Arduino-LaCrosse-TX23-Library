@@ -14,12 +14,7 @@
   Created by Krzysztof Egzmont, 06.11.2016.
   Based on https://www.john.geek.nz/2012/08/la-crosse-tx23u-anemometer-communication-protocol/
   Big thanks for John.
-  
-  Donations: 
-  Bitcoin - 1JrHQwJWt1JNZepT1EXqPSioXcwD227nnU
-  Ethereum - 0xFC9713013e78f6F14bA5064E36f875dbbB32B94a
-  
-  BSD license, all text above must be included in any redistribution
+
 *************************************************************************************************/
 
 #ifndef LaCrosse_TX23_h
